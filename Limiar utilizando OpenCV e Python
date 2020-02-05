@@ -1,0 +1,60 @@
+"""Limiar utilizando OpenCV e Python"""
+
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+def menu():
+
+    img = cv2.imread('dataset/superMan.jpg', 0)
+    acao = input('Escolha uma opção '
+                 '1: Limiar um  2: Limiar dois>>>')
+    if acao == "1":
+        limiar_1(img)
+    elif acao == '2':
+       limiar_2(img)
+    elif acao != "":
+        print("Opção inválida, tente novamente")
+
+
+def limiar_1(img):
+
+    ret, thresh1 = cv2.threshold(img,127,255, cv2.THRESH_BINARY)
+    ret, thresh2  = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+    ret, thresh3 = cv2.threshold(img, 127, 255, cv2.THRESH_TRUNC)
+    ret, thresh4 = cv2.threshold(img, 127, 255, cv2.THRESH_TOZERO)
+
+    titulos = ['Imagem original', 'BINARY', 'BINARY_INV', 'TRUNC', 'TOZERO']
+    images = [img, thresh1, thresh2, thresh3, thresh4]
+    m_array = np.arange(5)
+    for i in m_array:
+        plt.subplot(2,3, i + 1),plt.imshow(images[i], 'gray')
+        plt.title(titulos[i])
+        plt.xticks([]),plt.yticks([])
+
+    plt.show()
+
+def limiar_2(img):
+    img = cv2.medianBlur(img,5)
+
+    ret, thresh1 = cv2.threshold(img,127, 255, cv2.THRESH_BINARY)
+    """ADAPTIVE_THRESH_MEAN_C - valor limite que equivale ao valor da área vizinha
+    ADAPTIVE_THRESH_GAUSSIAN_C - Aqui o valor limite encontra-se na soma dos pesos dos valores vizinhos
+    """
+
+    thresh2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11,2)
+    thresh3 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+
+    titulos = ['Imagem original', 'Global Thresholding (v = 127)', 'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']
+    images = [img, thresh1, thresh2, thresh3]
+    img_array = np.arange(4)
+
+    for i in img_array:
+        plt.subplot(2,2, i + 1), plt.imshow(images[i], 'gray')
+        plt.title(titulos[i])
+        plt.xticks([]),plt.yticks([])
+        plt.show()
+
+if __name__ == '__main__':
+    menu()
+
